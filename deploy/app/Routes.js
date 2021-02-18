@@ -1,0 +1,27 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const multer_1 = __importDefault(require("multer"));
+const dotenv_1 = require("dotenv");
+const staticImagesPath_1 = __importDefault(require("../config/staticImagesPath"));
+const OldmanController_1 = __importDefault(require("./controllers/OldmanController"));
+const UserControllers_1 = __importDefault(require("./controllers/UserControllers"));
+const AdminControllers_1 = __importDefault(require("./controllers/AdminControllers"));
+dotenv_1.config();
+const imageConfig = multer_1.default(staticImagesPath_1.default);
+const routes = express_1.Router();
+const Oldman = new OldmanController_1.default;
+const User = new UserControllers_1.default;
+const Admin = new AdminControllers_1.default;
+routes.get('/', (req, res) => (res.json({ ok: 'server running' })));
+routes.get('/list', Oldman.Index);
+routes.post('/create', imageConfig.single('image'), Oldman.Store);
+routes.get('/oldman/:id', imageConfig.single('image'), Oldman.Show);
+routes.get('/login', User.Login);
+routes.post('/register', User.Create);
+routes.get(`/admin/find/${process.env.ROUTE_ADMIN}`, Admin.Users);
+routes.get(`/admin/delete/${process.env.ROUTE_ADMIN}`, Admin.Delete);
+exports.default = routes;
