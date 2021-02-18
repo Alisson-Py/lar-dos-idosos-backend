@@ -1,0 +1,30 @@
+{
+  "name": "lar-dos-idosos-backend",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "repository": "https://github.com/Alisson-Py/lar-dos-idosos-backend.git",
+  "author": "Alisson-Py <alissilva1231@hotmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.11.16",
+    "multer": "^1.4.2",
+    "nodemon": "^2.0.7"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.9",
+    "@types/express": "^4.17.11",
+    "@types/mongoose": "^5.10.3",
+    "@types/multer": "^1.4.5",
+    "ts-node": "^9.1.1",
+    "ts-node-dev": "^1.1.1",
+    "typescript": "^4.1.5"
+  },
+  "scripts": {
+    "dev": "ts-node-dev src/server.ts --ignore-watch node_modules --rs",
+    "deploy-dev": "tsc && nodemon deploy/server.js",
+    "start-deploy": "node deploy/server.js"
+  }
+}
