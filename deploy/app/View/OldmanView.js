@@ -25,6 +25,8 @@ function OldmanViewMany(arrayObject) {
 exports.OldmanViewMany = OldmanViewMany;
 ;
 function reconstructionMedicine(name, quant, time) {
+    if (!name)
+        return [];
     const med = name.map((i, index) => {
         return {
             name: name[index],

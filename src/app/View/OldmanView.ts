@@ -49,6 +49,7 @@ export function OldmanViewMany(arrayObject: Array<OldmanViewInputTypes> | any): 
 };
 
 function reconstructionMedicine(name: Array<String | null>, quant: Array<String | null>, time: Array<String | null>) {
+  if (!name) return [];
   const med = name.map((i, index) => {
     return {
       name: name[index],
