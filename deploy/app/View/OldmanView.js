@@ -9,7 +9,7 @@ function OldmanViewSingle(object) {
         name: object.name,
         age: object.age,
         gender: object.gender,
-        avatar: `${process.env.DOMAIN}public/${object.avatar}`,
+        avatar: object.avatar,
         isDisease: object.isDisease,
         disease: object.disease,
         medicine: reconstructionMedicine(object.medicine, object.medicineQuant, object.medicineTimes),
