@@ -1,6 +1,6 @@
 import {Request as Req,Response as Res} from 'express';
 import Oldman from '../models/OldmanModels';
-import {OldmanViewMany, OldmanViewSingle} from '../View/OldmanView';
+import {OldmanViewMany, OldmanViewSingle} from '../view/OldmanView';
 import { v4 as uuid } from 'uuid';
 
 export default class OldmanControllers {
