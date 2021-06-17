@@ -1,33 +1,26 @@
 import {Router} from 'express';
-import multer from 'multer';
-import {config} from 'dotenv';
+const routes = Router();
 
-import staticImagesPath from '../config/staticImagesPath';
 import OldmanControllers from './controllers/OldmanController';
 import UserControllers from './controllers/UserControllers';
-import AdminControllers from './controllers/AdminControllers';
 
-config()
-
-const imageConfig = multer(staticImagesPath);
-
-
-const routes = Router();
 const Oldman = new OldmanControllers;
 const User = new UserControllers;
-const Admin = new AdminControllers;
 
 routes.get('/', (req, res) => (res.json({ok: 'server running'})));
 
-routes.get('/list', Oldman.Index);
-routes.post('/create', imageConfig.single('image'), Oldman.Store);
-routes.get('/oldman/:id', imageConfig.single('image'), Oldman.Show);
+routes.get('/v1/login', User.Login);
 
-routes.get('/login', User.Login);
-routes.post('/register', User.Create);
+routes.get('/v1/users/show', User.Index);
+routes.get('/v1/users/details', User.Show);
+routes.post('/v1/users/create', User.Store);
+routes.put('/v1/users/update', User.Update);
+routes.delete('/v1/users/delete', User.Delete);
 
-routes.get(`/admin/find/${process.env.ROUTE_ADMIN}`, Admin.Users);
-routes.get(`/admin/delete/${process.env.ROUTE_ADMIN}`, Admin.Delete);
-
+routes.get('/v1/oldman/show', Oldman.Index);
+routes.get('/v1/oldman/details', Oldman.Show);
+routes.get('/v1/oldman/create', Oldman.Store);
+routes.get('/v1/oldman/update', Oldman.Update);
+routes.get('/v1/oldman/delete', Oldman.Delete);
 
 export default routes;
