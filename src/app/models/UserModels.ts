@@ -38,7 +38,7 @@ const UserSchema: Schema = new Schema({
     type: String,
     required: true,
   },
-  delted: {
+  deleted: {
     type: Boolean,
     default: false
   },
