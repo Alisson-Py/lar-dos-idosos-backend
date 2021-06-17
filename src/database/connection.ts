@@ -7,11 +7,12 @@ const uri = process.env.DB_URI || 'no';
 const connection = () => {
   mongoose.connect(uri, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useCreateIndex: true
   }).then(() => {
     console.log('DB Connect Successful')
   }).catch(err => {
-    console.log(err);
+    console.log({log: err.message});
   });
 }
 
