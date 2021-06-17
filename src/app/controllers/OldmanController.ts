@@ -40,9 +40,10 @@ export default class OldmanControllers {
       cpf, rg, isDisease,
       disease, medicineName,
       medicineQuant, medicineTimes,
-      image
+      image, auth
     } = req.body;
     try {
+      if (!(auth.userLevel === 'owner' || auth.userLevel === 'admin')) return res.status(401).json({err: 'access denied'})
       await Oldman.create({
         id: uuid(),
         name,
@@ -69,7 +70,9 @@ export default class OldmanControllers {
   
   async Update(req: Req, res: Res): Promise<Res<any>> {
     const id = req.params.id;
+    const {auth} = req.body;
     try {
+      if (!(auth.userLevel === 'owner' || auth.userLevel === 'admin')) return res.status(401).json({err: 'access denied'})
       return res.json({update: id});
     } catch (err) {
       console.log({log: err.message});
@@ -79,7 +82,10 @@ export default class OldmanControllers {
 
   async Delete(req: Req, res: Res): Promise<Res<any>> {
     const id = req.params.id;
+    const {auth} = req.body;
     try {
+      if (!(auth.userLevel === 'owner')) return res.status(401).json({err: 'access denied'})
+
       await Oldman.updateOne({
         id
       },{

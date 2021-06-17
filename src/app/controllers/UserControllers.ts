@@ -71,9 +71,11 @@ export default class UserControllers {
       lastName,
       email,
       password,
-      userLevel
+      userLevel,
+      auth
     } = req.body;
     try {
+      if (!(auth.userLevel === 'owner' || auth.userLevel === 'admin')) return res.status(401).json({err: 'access denied'})
       await User.create({
         id: uuid(),
         firstName,
@@ -91,7 +93,9 @@ export default class UserControllers {
   };
 
   async Update(req: Req,res: Res): Promise<Res<any>> {
+    const {auth} = req.body;
     try {
+      if (!(auth.userLevel === 'owner' || auth.userLevel === 'admin')) return res.status(401).json({err: 'access denied'})
       return res.json({show: true})
     }catch(err) {
       console.log({log: err.message});
@@ -101,7 +105,9 @@ export default class UserControllers {
 
   async Delete(req: Req,res: Res): Promise<Res<any>> {
     const id = req.params.id;
+    const {auth} = req.body;
     try {
+      if (!(auth.userLevel === 'owner')) return res.status(401).json({err: 'access denied'})
       const user = await User.findOne({
         id,
         deleted: false
