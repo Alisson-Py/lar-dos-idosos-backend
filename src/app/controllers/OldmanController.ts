@@ -1,48 +1,95 @@
 import {Request as Req,Response as Res} from 'express';
 import Oldman from '../models/OldmanModels';
 import {OldmanViewMany, OldmanViewSingle} from '../View/OldmanView';
-import dotenv from 'dotenv';
+import { v4 as uuid } from 'uuid';
 
 export default class OldmanControllers {
   async Index(req: Req, res: Res): Promise<Res<any>> {
-    const data = await Oldman.find();
-    return res.json(OldmanViewMany(data));
+    try {
+      const data = await Oldman.find({
+        deleted: false
+      });
+
+      if (!data) return res.json([]);
+      return res.json(OldmanViewMany(data));
+    } catch (err) {
+      console.log({log: err.message});
+      return res.status(500).send();
+    };
   };
 
   async Show(req: Req, res: Res): Promise<Res<any>> {
     const id = req.params.id;
-    const data = await Oldman.findOne({_id: id});
-    if (!data) return res.status(404).json({err: 'oldman not found'})
-    return res.json(OldmanViewSingle(data));
+    try {
+      const data = await Oldman.findOne({
+        id,
+        deleted: false
+      });
+
+      if (!data) return res.status(400).json({err: 'oldman not found'});
+      return res.json(OldmanViewSingle(data));
+    } catch (err) {
+      console.log({log: err.message});
+      return res.status(500).send();
+    };
   };
 
   async Store(req: Req, res: Res): Promise<Res<any>> {
-    dotenv.config();
     const {
-      name,
-      age,
-      gender,
-      isDisease,
-      disease,
-      medicine,
-      medicineQuant,
-      medicineTimes
+      name, age, gender,
+      cpf, rg, isDisease,
+      disease, medicineName,
+      medicineQuant, medicineTimes,
+      image
     } = req.body;
+    try {
+      await Oldman.create({
+        id: uuid(),
+        name,
+        age,
+        cpf,
+        rg,
+        gender,
+        isDisease: isDisease,
+        disease: disease || null,
+        medicine: {
+          name: medicineName,
+          quant: medicineQuant,
+          times: medicineTimes
+        },
+        // avatar: image
+      });
 
-    const requestImages = req.file as Express.Multer.File;
-    
-    await Oldman.create({
-      name,
-      age,
-      gender,
-      isDisease: isDisease,
-      disease: disease? JSON.parse(disease): null,
-      medicine: medicine? JSON.parse(medicine): null,
-      medicineQuant: medicineQuant? JSON.parse(medicineQuant): null,
-      medicineTimes: medicineTimes? JSON.parse(medicineTimes): null,
-      avatar: requestImages.filename
-    })
+      return res.json({created: true});
+    } catch (err) {
+      console.log({log: err.message});
+      return res.status(500).send();
+    };
+  };
+  
+  async Update(req: Req, res: Res): Promise<Res<any>> {
+    const id = req.params.id;
+    try {
+      return res.json({update: id});
+    } catch (err) {
+      console.log({log: err.message});
+      return res.status(500).send();
+    };
+  };
 
-    return res.status(202).send();
-  }
-}
+  async Delete(req: Req, res: Res): Promise<Res<any>> {
+    const id = req.params.id;
+    try {
+      await Oldman.updateOne({
+        id
+      },{
+        deleted: true
+      })
+
+      return res.json({delete: id});
+    } catch (err) {
+      console.log({log: err.message});
+      return res.status(500).send();
+    };
+  };
+};
