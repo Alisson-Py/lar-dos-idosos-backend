@@ -1,19 +1,37 @@
 import {Document, Schema, model} from 'mongoose';
 
-export interface UserModels extends Document {
-  name: String;
-  email: String;
-  passwordWash: String;
+export interface UserModelTypes extends Document {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  passwordWash: string;
+  userLevel: "owner" | "admin" | "user";
+  createdAt: Date;
+  updateAt: Date;
 }
 
 const UserSchema: Schema = new Schema({
-  name: {
+  id: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  firstName: {
+    type: String,
+    required: true,
+  },
+  lastName: {
     type: String,
     required: true,
   },
   email: {
     type: String,
     required: true
+  },
+  userLevel: {
+    type: String,
+    required: true,
   },
   passwordWash: {
     type: String,
@@ -22,8 +40,12 @@ const UserSchema: Schema = new Schema({
   createdAt: {
     type: Date,
     default: Date.now()
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now(),
   }
 });
 
 
-export default model<UserModels>('User', UserSchema);
+export default model<UserModelTypes>('User', UserSchema);
