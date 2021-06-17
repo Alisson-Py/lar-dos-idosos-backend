@@ -7,6 +7,7 @@ export interface UserModelTypes extends Document {
   email: string;
   passwordWash: string;
   userLevel: "owner" | "admin" | "user";
+  deleted: boolean;
   createdAt: Date;
   updateAt: Date;
 }
@@ -36,6 +37,10 @@ const UserSchema: Schema = new Schema({
   passwordWash: {
     type: String,
     required: true,
+  },
+  delted: {
+    type: Boolean,
+    default: false
   },
   createdAt: {
     type: Date,
