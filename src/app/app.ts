@@ -3,8 +3,17 @@ import routes from './Routes';
 import cors from 'cors';
 import connection from '../database/connection';
 import path from 'path';
+import { v2 as cloudinary } from 'cloudinary';
+import { config } from 'dotenv';
+config();
 
 const app = express();
+
+cloudinary.config({
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
+  cloud_name: process.env.CLOUD_NAME
+});
 
 connection();
 
