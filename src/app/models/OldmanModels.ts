@@ -1,18 +1,29 @@
 import {Document, Schema, model} from 'mongoose';
 
 export interface OldmanModelTypes extends Document {
-  name: String;
+  id: string;
+  name: string;
   age: Number;
-  gender: 'm' | 'f';
+  gender: 'M' | 'F';
+  cpf: number;
+  rg: number;
   isDisease: Boolean;
-  disease?: Array<String>
-  medicine?: Array<String> | Array<null>;
-  medicineQuant?: Array<String> | Array<null>;
-  medicineTimes?: Array<String> | Array<null>;
-  avatar?: String;
+  disease?: Array<string>
+  medicine?: {
+    name: string[];
+    quant: string[];
+    times: string[];
+  };
+  deleted: boolean;
+  avatar?: string;
 }
 
 const OldmanSchema: Schema = new Schema({
+  id: {
+    type: String,
+    required: true,
+    unique: true
+  },
   name: {
     type: String,
     required: true,
@@ -21,9 +32,17 @@ const OldmanSchema: Schema = new Schema({
     type: Number,
     required: true,
   },
+  cpf: {
+    type: String,
+    required: true
+  },
+  rg: {
+    type: String,
+    required: true,
+  },
   gender: {
     type: String,
-    enum: ['m', 'f'],
+    enum: ['M', 'F'],
     required: true
   },
   isDisease: {
@@ -34,13 +53,19 @@ const OldmanSchema: Schema = new Schema({
     type: Array
   },
   medicine: {
-    type: Array,
+    name: {
+      type: [String]
+    },
+    quant: {
+      type: [String]
+    },
+    times: {
+      type: [String]
+    },
   },
-  medicineTimes: {
-    type: Array,
-  },
-  medicineQuant: {
-    type: Array,
+  deleted: {
+    type: Boolean,
+    default: false
   },
   avatar: {
     type: String,

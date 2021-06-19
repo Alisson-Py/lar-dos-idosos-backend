@@ -4,38 +4,119 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const OldmanModels_1 = __importDefault(require("../models/OldmanModels"));
-const OldmanView_1 = require("../View/OldmanView");
-const dotenv_1 = __importDefault(require("dotenv"));
+const OldmanView_1 = require("../view/OldmanView");
+const uuid_1 = require("uuid");
+const cloudinary_1 = require("cloudinary");
 class OldmanControllers {
     async Index(req, res) {
-        const data = await OldmanModels_1.default.find();
-        return res.json(OldmanView_1.OldmanViewMany(data));
+        try {
+            const data = await OldmanModels_1.default.find({
+                deleted: false
+            });
+            if (!data)
+                return res.json([]);
+            return res.json(OldmanView_1.OldmanViewMany(data));
+        }
+        catch (err) {
+            console.log({ log: err.message });
+            return res.status(500).send();
+        }
+        ;
     }
     ;
     async Show(req, res) {
         const id = req.params.id;
-        const data = await OldmanModels_1.default.findOne({ _id: id });
-        if (!data)
-            return res.status(404).json({ err: 'oldman not found' });
-        return res.json(OldmanView_1.OldmanViewSingle(data));
+        try {
+            const data = await OldmanModels_1.default.findOne({
+                id,
+                deleted: false
+            });
+            if (!data)
+                return res.status(400).json({ err: 'oldman not found' });
+            return res.json(OldmanView_1.OldmanViewSingle(data));
+        }
+        catch (err) {
+            console.log({ log: err.message });
+            return res.status(500).send();
+        }
+        ;
     }
     ;
     async Store(req, res) {
-        dotenv_1.default.config();
-        const { name, age, gender, isDisease, disease, medicine, medicineQuant, medicineTimes } = req.body;
-        const requestImages = req.file;
-        await OldmanModels_1.default.create({
-            name,
-            age,
-            gender,
-            isDisease: isDisease,
-            disease: disease ? JSON.parse(disease) : null,
-            medicine: medicine ? JSON.parse(medicine) : null,
-            medicineQuant: medicineQuant ? JSON.parse(medicineQuant) : null,
-            medicineTimes: medicineTimes ? JSON.parse(medicineTimes) : null,
-            avatar: requestImages.filename
-        });
-        return res.status(202).send();
+        const { name, age, gender, cpf, rg, isDisease, disease, medicineName, medicineQuant, medicineTimes, image, auth } = req.body;
+        try {
+            let imageUrl = '';
+            if (!(auth.userLevel === 'owner' || auth.userLevel === 'admin'))
+                return res.status(401).json({ err: 'access denied' });
+            await cloudinary_1.v2.uploader.upload(image, {
+                folder: 'lar-dos-idosos'
+            }, (err, cb) => {
+                if (err)
+                    throw err;
+                if (!cb)
+                    return;
+                imageUrl = cb.url;
+            });
+            await OldmanModels_1.default.create({
+                id: uuid_1.v4(),
+                name,
+                age,
+                cpf,
+                rg,
+                gender: gender.toUpperCase(),
+                isDisease: isDisease,
+                disease: disease || null,
+                medicine: {
+                    name: medicineName,
+                    quant: medicineQuant,
+                    times: medicineTimes
+                },
+                avatar: imageUrl
+            });
+            return res.json({ created: true });
+        }
+        catch (err) {
+            console.log({ log: err.message });
+            return res.status(500).send();
+        }
+        ;
     }
+    ;
+    async Update(req, res) {
+        const id = req.params.id;
+        const { auth } = req.body;
+        try {
+            if (!(auth.userLevel === 'owner' || auth.userLevel === 'admin'))
+                return res.status(401).json({ err: 'access denied' });
+            return res.json({ update: id });
+        }
+        catch (err) {
+            console.log({ log: err.message });
+            return res.status(500).send();
+        }
+        ;
+    }
+    ;
+    async Delete(req, res) {
+        const id = req.params.id;
+        const { auth } = req.body;
+        try {
+            if (!(auth.userLevel === 'owner'))
+                return res.status(401).json({ err: 'access denied' });
+            await OldmanModels_1.default.updateOne({
+                id
+            }, {
+                deleted: true
+            });
+            return res.json({ delete: id });
+        }
+        catch (err) {
+            console.log({ log: err.message });
+            return res.status(500).send();
+        }
+        ;
+    }
+    ;
 }
 exports.default = OldmanControllers;
+;

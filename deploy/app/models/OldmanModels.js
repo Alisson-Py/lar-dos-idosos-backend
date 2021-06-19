@@ -2,6 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 const OldmanSchema = new mongoose_1.Schema({
+    id: {
+        type: String,
+        required: true,
+        unique: true
+    },
     name: {
         type: String,
         required: true,
@@ -10,9 +15,17 @@ const OldmanSchema = new mongoose_1.Schema({
         type: Number,
         required: true,
     },
+    cpf: {
+        type: String,
+        required: true
+    },
+    rg: {
+        type: String,
+        required: true,
+    },
     gender: {
         type: String,
-        enum: ['m', 'f'],
+        enum: ['M', 'F'],
         required: true
     },
     isDisease: {
@@ -23,13 +36,19 @@ const OldmanSchema = new mongoose_1.Schema({
         type: Array
     },
     medicine: {
-        type: Array,
+        name: {
+            type: [String]
+        },
+        quant: {
+            type: [String]
+        },
+        times: {
+            type: [String]
+        },
     },
-    medicineTimes: {
-        type: Array,
-    },
-    medicineQuant: {
-        type: Array,
+    deleted: {
+        type: Boolean,
+        default: false
     },
     avatar: {
         type: String,
