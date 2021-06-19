@@ -2,6 +2,7 @@ import {Request as Req,Response as Res} from 'express';
 import Oldman from '../models/OldmanModels';
 import {OldmanViewMany, OldmanViewSingle} from '../view/OldmanView';
 import { v4 as uuid } from 'uuid';
+import { v2 as cloudinary } from 'cloudinary';
 
 export default class OldmanControllers {
   async Index(req: Req, res: Res): Promise<Res<any>> {
@@ -43,14 +44,23 @@ export default class OldmanControllers {
       image, auth
     } = req.body;
     try {
+      let imageUrl:string = '';
       if (!(auth.userLevel === 'owner' || auth.userLevel === 'admin')) return res.status(401).json({err: 'access denied'})
+      await cloudinary.uploader.upload(image, {
+        folder: 'lar-dos-idosos'
+      }, (err, cb) => {
+        if(err) throw err;
+        if(!cb) return;
+        imageUrl = cb.url
+      });
+
       await Oldman.create({
         id: uuid(),
         name,
         age,
         cpf,
         rg,
-        gender,
+        gender: gender.toUpperCase(),
         isDisease: isDisease,
         disease: disease || null,
         medicine: {
@@ -58,7 +68,7 @@ export default class OldmanControllers {
           quant: medicineQuant,
           times: medicineTimes
         },
-        // avatar: image
+        avatar: imageUrl
       });
 
       return res.json({created: true});
