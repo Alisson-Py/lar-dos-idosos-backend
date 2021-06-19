@@ -76,7 +76,8 @@ class UserControllers {
     async Store(req, res) {
         const { firstName, lastName, email, password, userLevel, auth } = req.body;
         try {
-            // if (!(auth.userLevel === 'owner' || auth.userLevel === 'admin')) return res.status(401).json({err: 'access denied'})
+            if (!(auth.userLevel === 'owner' || auth.userLevel === 'admin'))
+                return res.status(401).json({ err: 'access denied' });
             await UserModels_1.default.create({
                 id: uuid_1.v4(),
                 firstName,
